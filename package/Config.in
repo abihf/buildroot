@@ -586,6 +586,7 @@ source "package/zxing/Config.in"
 endmenu
 
 menu "Hardware handling"
+source "package/acsccid/Config.in"
 source "package/ccid/Config.in"
 source "package/dtc/Config.in"
 source "package/lcdapi/Config.in"

@@ -5,8 +5,8 @@
 ################################################################################
 
 ACSCCID_VERSION = 1.1.0
-ACSCCID_SOURCE = v$(CCID_VERSION).tar.gz
-ACSCCID_SITE = https://github.com/acshk/acsccid/archive/
+ACSCCID_SOURCE = acsccid-$(ACSCCID_VERSION).tar.bz2
+ACSCCID_SITE = https://downloads.sourceforge.net/acsccid/
 ACSCCID_LICENSE = LGPLv2.1+
 ACSCCID_LICENSE_FILES = COPYING
 ACSCCID_INSTALL_STAGING = YES

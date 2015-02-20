@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_PYSCARD
+	bool "python-pyscard"
+	depends on BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_PCSC_LITE
+	help
+	  pyscard is a python module adding smart cards support (PC/SC) to python.
+
+	  http://pyscard.sourceforge.net/
+

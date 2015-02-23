@@ -4,21 +4,21 @@
 #
 ################################################################################
 ifeq ($(BR2_BCM_REFSW_VERSION_V12), y)
-    BCM_REFSW_SITE = file://../bcm-refsw
-    BCM_REFSW_VERSION = 20121210
-    BCM_REFSW_SOURCE = refsw_release_unified_$(BCM_REFSW_VERSION).src.tar.xz
+	BCM_REFSW_SITE = file://../bcm-refsw
+	BCM_REFSW_VERSION = 20121210
+	BCM_REFSW_SOURCE = refsw_release_unified_$(BCM_REFSW_VERSION).src.tar.xz
 else ifeq ($(BR2_BCM_REFSW_VERSION_V13), y)
-    BCM_REFSW_SITE = file://../bcm-refsw
-    BCM_REFSW_VERSION = 20131218
-    BCM_REFSW_SOURCE = refsw_release_unified_$(BCM_REFSW_VERSION).src.tar.xz
+	BCM_REFSW_SITE = file://../bcm-refsw
+	BCM_REFSW_VERSION = 20131218
+	BCM_REFSW_SOURCE = refsw_release_unified_$(BCM_REFSW_VERSION).src.tar.xz
 else ifeq ($(BR2_BCM_REFSW_VERSION_V14), y)
-    BCM_REFSW_SITE = file://../bcm-refsw
-    BCM_REFSW_VERSION = 20141217
-    BCM_REFSW_SOURCE = refsw_release_unified_$(BCM_REFSW_VERSION).src.tar.xz
+	BCM_REFSW_SITE = file://../bcm-refsw
+	BCM_REFSW_VERSION = 20141217
+	BCM_REFSW_SOURCE = refsw_release_unified_$(BCM_REFSW_VERSION).src.tar.xz
 else
-    BCM_REFSW_SITE = file:///
-    BCM_REFSW_VERSION = CUSTOM
-    BCM_REFSW_SOURCE = $(call qstrip,${BR2_BCMREFSW_CUSTOM_LOCATION})
+	BCM_REFSW_SITE = file:///
+	BCM_REFSW_VERSION = CUSTOM
+	BCM_REFSW_SOURCE = $(call qstrip,${BR2_BCMREFSW_CUSTOM_LOCATION})
 endif
 
 BCM_REFSW_DEPENDENCIES = linux host-pkgconf
@@ -32,6 +32,7 @@ BCM_MAKE_ENV = \
 	NEXUS_PLATFORM=$(call qstrip,${BR2_PACKAGE_BCM_REFSW_PLATFORM}) \
 	LINUX=${LINUX_DIR} \
 	BCHP_VER=$(call qstrip,${BR2_PACKAGE_BCM_REFSW_PLATFORM_REV}) \
+	B_REFSW_VERBOSE=y \
 	NEXUS_HEADERS=y \
 	TOOLCHAIN_ROOT=$(HOST_DIR)/usr/bin/ \
 	SC_PLATFORM=bcm$(call qstrip,${BR2_PACKAGE_BCM_REFSW_PLATFORM})nexus
@@ -52,7 +53,7 @@ endif
 ifeq ($(BR2_BCM_REFSW_DEBUG_LEVEL_OFF), y)
 BCM_MAKE_ENV += B_REFSW_DEBUG=n
 else 
-BCM_MAKE_ENV += B_REFSW_DEBUG=y
+
 ifeq ($(BR2_BCM_REFSW_DEBUG_LEVEL_ERROR), y)
 BCM_MAKE_ENV += B_REFSW_DEBUG_LEVEL=err
 else
@@ -65,7 +66,7 @@ BCM_OUTPUT = /obj.$(call qstrip,${BR2_PACKAGE_BCM_REFSW_PLATFORM})/
 else
 BCM_OUTPUT = /
 endif
-        
+
 ifeq ($(BR2_PACKAGE_PLUGIN_SURFACECOMPOSITOR),y)
 BCM_COMPOSITIONDEFINE=-DNEXUS_SURFACE_COMPOSITION
 else ifeq ($(BR2_PACKAGE_DAWN_SDK),y)
@@ -84,7 +85,7 @@ endif
 
 BCM_MAKEFLAGS  = CROSS_COMPILE="${TARGET_CROSS}"
 BCM_MAKEFLAGS += TOOLCHAIN_DIR="${HOST_DIR}/usr/bin"
-BCM_MAKEFLAGS += B_REFSW_ARCH=${BR2_ARCH}-linux
+BCM_MAKEFLAGS += B_REFSW_ARCH=$(call qstrip,${BR2_ARCH})-linux
 BCM_MAKEFLAGS += PATH=${HOST_DIR}/usr/bin:${PATH}
 BCM_MAKEFLAGS += PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig:$(STAGING_DIR)/usr/share/pkgconfig"
 BCM_MAKEFLAGS += HOST_DIR="${HOST_DIR}"
@@ -103,21 +104,23 @@ define BCM_REFSW_BUILD_CMDS
 endef
 
 define BCM_REFSW_INSTALL_LIBS
-	if [ -f $(@D)$(BCM_OUTPUT)nexus/bin/libnexus_client.so ] ; then 					\
-		$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libnexus_client.so $1/usr/lib/libnxclient.so ;	\
+	if [ -f $(@D)$(BCM_OUTPUT)nexus/bin/libnexus_client.so ] ; then \
+		$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libnexus_client.so $1/usr/lib/libnxclient.so; \
 	fi
-	if [ -f $(@D)$(BCM_OUTPUT)nexus/bin/libnxclient.so ] ; then 						\
-		$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libnxclient.so $1/usr/lib/libnxclient.so ;		\
+	if [ -f $(@D)$(BCM_OUTPUT)nexus/bin/libnxclient.so ] ; then \
+		$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libnxclient.so $1/usr/lib/libnxclient.so; \
 	fi
-		
+
 	$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libnexus.so $1/usr/lib/libnexus.so
 	$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libv3ddriver.so $1/usr/lib/libv3ddriver.so
 	$(INSTALL) -D $(@D)$(BCM_OUTPUT)nexus/bin/libnxpl.so $1/usr/lib/libnxpl.so
 
 	# Some packages search for the common names
-	ln -s $1/usr/lib/libv3ddriver.so $1/usr/lib/libEGL.so
-	ln -s $1/usr/lib/libv3ddriver.so $1/usr/lib/libGLESv2.so
-	ln -s $1/usr/lib/libv3ddriver.so $1/usr/lib/libOpenVG.so
+	rm -rf $1/usr/lib/libEGL.so $1/usr/lib/libGLESv2.so $1/usr/lib/libOpenVG.so
+	cd $1/usr/lib && \
+		ln -sf libv3ddriver.so libEGL.so && \
+		ln -sf libv3ddriver.so libGLESv2.so && \
+		ln -sf libv3ddriver.so libOpenVG.so
 endef
 
 define BCM_REFSW_INSTALL_STAGING_CMDS
@@ -142,10 +145,10 @@ endef
 
 define BCM_REFSW_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 750 -D $(@D)$(BCM_OUTPUT)nexus/bin/nexus $(TARGET_DIR)/sbin/nexus
-	if [ -f $(@D)$(BCM_OUTPUT)nexus/bin/bcmdriver.ko ] ; then 							\
-		$(INSTALL) -m 644 -D $(@D)$(BCM_OUTPUT)nexus/bin/bcmdriver.ko $(TARGET_DIR)/lib/modules/bcmdriver.ko ;	\
-	else														\
-		$(INSTALL) -m 644 -D $(@D)$(BCM_OUTPUT)nexus/bin/nexus.ko $(TARGET_DIR)/lib/modules/nexus.ko ;		\
+	if [ -f $(@D)$(BCM_OUTPUT)nexus/bin/bcmdriver.ko ] ; then \
+		$(INSTALL) -m 644 -D $(@D)$(BCM_OUTPUT)nexus/bin/bcmdriver.ko $(TARGET_DIR)/lib/modules/bcmdriver.ko; \
+	else \
+		$(INSTALL) -m 644 -D $(@D)$(BCM_OUTPUT)nexus/bin/nexus.ko $(TARGET_DIR)/lib/modules/nexus.ko; \
 	fi
 	$(call BCM_REFSW_INSTALL_LIBS,$(TARGET_DIR))
 endef

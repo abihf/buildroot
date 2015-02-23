@@ -1092,4 +1092,8 @@ source "package/vim/Config.in"
 endif
 endmenu
 
+menu "Stubs and Reference implementations"
+source "package/stubs/Config.in"
+endmenu
+
 endmenu

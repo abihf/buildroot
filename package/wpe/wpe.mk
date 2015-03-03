@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WPE_VERSION = c0101540b2b8ff31e3a90f87fe714cecaa668bb4
+WPE_VERSION = c2b18cc1cc19322d7192246d36902378d8f2a49c
 WPE_SITE = $(call github,Metrological,WebKitForWayland,$(WPE_VERSION))
 
 WPE_INSTALL_STAGING = YES
@@ -146,6 +146,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_WPE_USE_MEDIA_SOURCE),y)
 	WPE_FLAGS += -DENABLE_MEDIA_SOURCE=ON
+endif
+
+ifeq ($(BR2_PACKAGE_WPE_ENABLE_JS_MEMORY_TRACKING),y)
+	WPE_FLAGS += -DENABLE_JS_MEMORY_TRACKING=ON
 endif
 
 WPE_CONF_OPT = -DPORT=WPE -G Ninja \

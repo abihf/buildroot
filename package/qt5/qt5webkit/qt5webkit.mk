@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-QT5WEBKIT_VERSION = ad4bd4b744facae21f52fa54a26744f3a74b742f
+QT5WEBKIT_VERSION = acb5adb43d97b2a5e30998fb20a50657f168b14a
 ifeq ($(BR2_QT5WEBKIT_USE_WEBRTC),y)
 QT5WEBKIT_VERSION = de07f58fb904c81794af37238e2c0c2989a59898
 endif
@@ -137,6 +137,22 @@ ifeq ($(BR2_QT5WEBKIT_USE_LOCATION),y)
 	QT5WEBKIT_CONFIG += \
 		WEBKIT_CONFIG+=location
 	QT5WEBKIT_DEPENDENCIES += qt5location
+endif
+
+ifeq ($(BR2_QT5WEBKIT_USE_WEBINSPECTOR),y)
+	QT5WEBKIT_CONFIG += \
+		WEBKIT_CONFIG+=inspector
+else
+	QT5WEBKIT_CONFIG += \
+		WEBKIT_CONFIG-=inspector
+endif
+
+ifeq ($(BR2_QT5WEBKIT_USE_SVG),y)
+	QT5WEBKIT_CONFIG += \
+		WEBKIT_CONFIG+=svg
+else
+	QT5WEBKIT_CONFIG += \
+		WEBKIT_CONFIG-=svg
 endif
 
 ifeq ($(BR2_QT5WEBKIT_USE_ORIENTATION),y)

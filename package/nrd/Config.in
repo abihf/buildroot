@@ -16,19 +16,26 @@ config BR2_PACKAGE_NRD
 
 if BR2_PACKAGE_NRD
 
-config BR2_PACKAGE_NRD_MIDDLEWARE
-	bool "middleware"
-	default y
-	help
-	  Build the middleware componentn for integration in a TEE (libnrd.a)
+choice 
+	prompt "How should the NRD app be build:"
 
 config BR2_PACKAGE_NRD_APPLICATION
 	bool "application"
-	default y
 	help
-	  Build the application that plays the content and interacts with the TEE.
+	  Build NRD as a stand-alone application. Could be run from the CLI.
 
-if BR2_PACKAGE_NRD_APPLICATION
+config BR2_PACKAGE_NRD_DYNAMICLIB
+	bool "dynamic"
+	help
+	  Build NRD to be used as a dynamical loadable module to be used as part of another app.
+
+config BR2_PACKAGE_NRD_STATICLIB
+	bool "static"
+	help
+	  Build NRD to be used as a static library to be used as part of another app.
+
+endchoice
+
 choice
 	prompt "What graphics access system layer to be used"
 
@@ -54,6 +61,12 @@ config BR2_NRD_GRAPHICS_GLES2
 	help
 	  Use the GLESV2 access layer.
 
+config BR2_NRD_GRAPHICS_METROLOGICAL
+	bool "metrological"
+	depends on BR2_PACKAGE_HAS_OPENGL_ES
+	help
+	  Use the EGL access layer based on a plugin structure.
+
 config BR2_NRD_GRAPHICS_NULL
 	bool "null"
 	help
@@ -61,13 +74,69 @@ config BR2_NRD_GRAPHICS_NULL
  
 endchoice
 
-config BR2_NRD_DOLYDIGITALPLUS_STUBBED
-	bool "DDPlus stub"
-	default y
-	select BR2_PACKAGE_DDPSTUB
+choice
+	prompt "Which media playback implementation should we use:"
+
+config BR2_PACKAGE_NRD_PLAYER_SKELETON
+	bool "skeleton"
 	help
-	  There is no actual implementation for the DolbyDigital Plus 
-	  audio component. Please use the stub.
+	  Build NRD using a stubbed media playback skeleton from NRD.
+
+config BR2_PACKAGE_NRD_PLAYER_X86
+	bool "reference"
+	depends on BR2_i386
+	help
+	  Build NRD using the x86 media playback implementation
+
+config BR2_PACKAGE_NRD_PLAYER_METROLOGICAL
+	bool "metrological"
+	depends on BR2_i386 || BR2_arm || BR2_mips
+	help
+	  Build NRD using the Metrological media playback implementation
+
+endchoice
+
+choice
+	prompt "Which input method should we use:"
+
+config BR2_PACKAGE_NRD_INPUT_DEVINPUT
+	bool "devinput"
+	help
+	  Build NRD using the device devinput
+
+config BR2_PACKAGE_NRD_INPUT_METROLOGICAL
+	bool "metrological"
+	help
+	  Build NRD using the interface MetrologicalInput to insert keys via this method.
+
+endchoice
+
+config BR2_NRD_DRM_ENABLED
+	bool "playready"
+	depends on BR2_PACKAGE_DXDRM
+
+if BR2_NRD_DRM_ENABLED
+
+choice 
+	prompt "Which playready version should we use:"
+
+config BR2_PACKAGE_NRD_PLAYREADY
+	bool "playready 1.5"
+	help
+	  Build NRD using the PlayReady version 1.5.
+
+config BR2_PACKAGE_NRD_PLAYREADY2
+	bool "playready 2"
+	help
+	  Build NRD using the PlayReady version 2.
+
+config BR2_PACKAGE_NRD_PLAYREADY25
+	bool "playready 2.5"
+	help
+	  Build NRD using the PlayReady version 2.5.
+
+endchoice
+
 endif
 
 config BR2_NRD_DEBUG_BUILD
@@ -81,5 +150,13 @@ config BR2_NRD_NICE_THREADS
 	bool "nice threads"
 	help
 	  Build the nrd framework using nice threading model.
+
+config BR2_NRD_DOLYDIGITALPLUS_STUBBED
+	bool "DDPlus stub"
+	default y
+	select BR2_PACKAGE_DDPSTUB
+	help
+	  There is no actual implementation for the DolbyDigital Plus 
+	  audio component. Please use the stub.
 
 endif

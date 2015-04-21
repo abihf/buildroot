@@ -4,14 +4,13 @@
 #
 ################################################################################
 
-WPE_VERSION = c2b18cc1cc19322d7192246d36902378d8f2a49c
+WPE_VERSION = a2caf0503fa204a16549da47444305d0dbefc36f
 WPE_SITE = $(call github,Metrological,WebKitForWayland,$(WPE_VERSION))
 
 WPE_INSTALL_STAGING = YES
 WPE_DEPENDENCIES = host-flex host-bison host-gperf host-ruby host-ninja \
 	host-pkgconf zlib pcre libgles libegl cairo freetype fontconfig \
-	harfbuzz icu libxml2 libxslt sqlite libsoup jpeg webp \
-	wayland libxkbcommon
+	harfbuzz icu libxml2 libxslt sqlite libsoup jpeg webp wayland
 
 WPE_FLAGS = \
 		-DENABLE_ACCELERATED_2D_CANVAS=ON \
@@ -20,7 +19,6 @@ WPE_FLAGS = \
 		-DENABLE_CANVAS_PROXY=OFF \
 		-DENABLE_CHANNEL_MESSAGING=ON \
 		-DENABLE_CSP_NEXT=OFF \
-		-DENABLE_CSS3_CONDITIONAL_RULES=ON \
 		-DENABLE_CSS3_TEXT=OFF \
 		-DENABLE_CSS3_TEXT_LINE_BREAK=OFF \
 		-DENABLE_CSS_BOX_DECORATION_BREAK=ON \
@@ -46,10 +44,8 @@ WPE_FLAGS = \
 		-DENABLE_FULLSCREEN_API=OFF \
 		-DENABLE_GAMEPAD=OFF \
 		-DENABLE_GEOLOCATION=OFF \
-		-DENABLE_HIGH_DPI_CANVAS=OFF \
 		-DENABLE_ICONDATABASE=ON \
 		-DENABLE_INDEXED_DATABASE=OFF \
-		-DENABLE_INPUT_SPEECH=OFF \
 		-DENABLE_INPUT_TYPE_COLOR=OFF \
 		-DENABLE_INPUT_TYPE_DATE=OFF \
 		-DENABLE_INPUT_TYPE_DATETIMELOCAL=OFF \
@@ -81,11 +77,9 @@ WPE_FLAGS = \
 		-DENABLE_REQUEST_ANIMATION_FRAME=ON \
 		-DENABLE_RESOLUTION_MEDIA_QUERY=OFF \
 		-DENABLE_RESOURCE_TIMING=ON \
-		-DENABLE_SCRIPTED_SPEECH=OFF \
 		-DENABLE_SECCOMP_FILTERS=OFF \
 		-DENABLE_STREAMS_API=ON \
 		-DENABLE_SUBTLE_CRYPTO=OFF \
-		-DENABLE_SUID_SANDBOX_LINUX=OFF \
 		-DENABLE_SVG_FONTS=ON \
 		-DENABLE_TEMPLATE_ELEMENT=ON \
 		-DENABLE_TEXT_AUTOSIZING=OFF \
@@ -101,7 +95,8 @@ WPE_FLAGS = \
 		-DENABLE_WEB_TIMING=ON \
 		-DENABLE_XHR_TIMEOUT=ON \
 		-DENABLE_XSLT=ON \
-		-DUSE_SYSTEM_MALLOC=OFF
+		-DUSE_SYSTEM_MALLOC=OFF \
+		-DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON
 
 ifeq ($(BR2_WPE_GSTREAMER),y)
 	WPE_DEPENDENCIES += \
@@ -157,22 +152,22 @@ WPE_CONF_OPT = -DPORT=WPE -G Ninja \
 	$(WPE_FLAGS)
 
 define WPE_BUILD_CMDS
-	$(WPE_MAKE_ENV) $(HOST_DIR)/usr/bin/ninja -C $(WPE_BUILDDIR) libWebKit2.so WPE{Web,Network}Process WPE$(WPE_SHELL)Shell
+	$(WPE_MAKE_ENV) $(HOST_DIR)/usr/bin/ninja -C $(WPE_BUILDDIR) libWPEWebKit.so WPE{Web,Network}Process WPE$(WPE_SHELL)Shell
 endef
 
 define WPE_INSTALL_STAGING_CMDS
 	(cd $(WPE_BUILDDIR) && \
 	cp bin/WPE{Network,Web}Process $(STAGING_DIR)/usr/bin/ && \
-	cp -d lib/libWebKit* $(STAGING_DIR)/usr/lib/ && \
-	cp lib/libWPE* $(STAGING_DIR)/usr/lib/ )
+	cp -d lib/libWPE* $(STAGING_DIR)/usr/lib/ )
 endef
 
 define WPE_INSTALL_TARGET_CMDS
-	(cd $(WPE_BUILDDIR) && \
+	(pushd $(WPE_BUILDDIR) > /dev/null && \
 	cp bin/WPE{Network,Web}Process $(TARGET_DIR)/usr/bin/ && \
-	cp -d lib/libWebKit* $(TARGET_DIR)/usr/lib/ && \
-	cp lib/libWPE* $(TARGET_DIR)/usr/lib/ && \
-	$(STRIPCMD) $(TARGET_DIR)/usr/lib/libWebKit2.so.0.0.1 )
+	cp -d lib/libWPE* $(TARGET_DIR)/usr/lib/ && \
+	$(STRIPCMD) $(TARGET_DIR)/usr/lib/libWPEWebKit.so.0.0.1 && \
+	popd > /dev/null && \
+	install -D -m 0755 package/wpe/wpe $(TARGET_DIR)/usr/bin )
 endef
 
 RSYNC_VCS_EXCLUSIONS += --exclude LayoutTests --exclude WebKitBuild

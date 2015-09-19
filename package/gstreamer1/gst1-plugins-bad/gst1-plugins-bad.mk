@@ -5,7 +5,9 @@
 ################################################################################
 
 GST1_PLUGINS_BAD_VERSION = $(GSTREAMER1_VERSION)
-
+ifeq ($(BR2_PACKAGE_GSTREAMER1_GIT),y)
+GST1_PLUGINS_BAD_VERSION = 5674dd75d9d230496d15496deb4280d6455224c6
+endif
 GST1_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST1_PLUGINS_BAD_VERSION).tar.gz
 GST1_PLUGINS_BAD_SITE = http://cgit.freedesktop.org/gstreamer/gst-plugins-bad/snapshot/
 GST1_PLUGINS_BAD_INSTALL_STAGING = YES
@@ -20,6 +22,7 @@ GST1_PLUGINS_BAD_AUTORECONF_OPT = -I $(@D)/m4 -I $(@D)/common/m4
 GST1_PLUGINS_BAD_POST_DOWNLOAD_HOOKS += GSTREAMER1_COMMON_DOWNLOAD
 GST1_PLUGINS_BAD_POST_EXTRACT_HOOKS += GSTREAMER1_COMMON_EXTRACT
 GST1_PLUGINS_BAD_PRE_CONFIGURE_HOOKS += GSTREAMER1_FIX_AUTOPOINT
+GST1_PLUGINS_BAD_POST_INSTALL_TARGET_HOOKS += GSTREAMER1_REMOVE_LA_FILES
 
 GST1_PLUGINS_BAD_CONF_OPT = \
 	--disable-examples \
@@ -38,6 +41,11 @@ GST1_PLUGINS_BAD_CONF_OPT = \
 	--disable-wininet \
 	--disable-acm
 
+ifeq ($(BR2_PACKAGE_GSTREAMER1_GIT),y)
+GST1_PLUGINS_BAD_CONF_OPT += \
+	--disable-qt
+endif
+
 # Options which require currently unpackaged libraries
 GST1_PLUGINS_BAD_CONF_OPT += \
 	--disable-avc \
@@ -49,7 +57,6 @@ GST1_PLUGINS_BAD_CONF_OPT += \
 	--disable-voamrwbenc \
 	--disable-voaacenc \
 	--disable-chromaprint \
-	--disable-dash \
 	--disable-dc1394 \
 	--disable-dts \
 	--disable-resindvd \
@@ -74,7 +81,6 @@ GST1_PLUGINS_BAD_CONF_OPT += \
 	--disable-timidity \
 	--disable-teletextdec \
 	--disable-wildmidi \
-	--disable-smoothstreaming \
 	--disable-soundtouch \
 	--disable-spc \
 	--disable-gme \
@@ -672,6 +678,13 @@ GST1_PLUGINS_BAD_CONF_OPT += --enable-sdl
 GST1_PLUGINS_BAD_DEPENDENCIES += sdl
 else
 GST1_PLUGINS_BAD_CONF_OPT += --disable-sdl
+endif
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_SMOOTHSTREAMING),y)
+GST1_PLUGINS_BAD_CONF_OPT += --enable-smoothstreaming
+GST1_PLUGINS_BAD_DEPENDENCIES += libxml2
+else
+GST1_PLUGINS_BAD_CONF_OPT += --disable-smoothstreaming
 endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_SNDFILE),y)

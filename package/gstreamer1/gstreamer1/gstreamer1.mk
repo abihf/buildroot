@@ -4,6 +4,9 @@
 #
 ################################################################################
 
+ifeq ($(BR2_PACKAGE_GSTREAMER1_GIT),y)
+GSTREAMER1_VERSION = fcdfcbd618bf4235536122cd63856765827ff4ca
+endif
 GSTREAMER1_SOURCE = gstreamer-$(GSTREAMER1_VERSION).tar.gz
 GSTREAMER1_SITE = http://cgit.freedesktop.org/gstreamer/gstreamer/snapshot/
 GSTREAMER1_INSTALL_STAGING = YES
@@ -16,6 +19,7 @@ GSTREAMER1_AUTORECONF_OPT = -I $(@D)/m4 -I $(@D)/common/m4
 GSTREAMER1_POST_DOWNLOAD_HOOKS += GSTREAMER1_COMMON_DOWNLOAD
 GSTREAMER1_POST_EXTRACT_HOOKS += GSTREAMER1_COMMON_EXTRACT
 GSTREAMER1_PRE_CONFIGURE_HOOKS += GSTREAMER1_FIX_AUTOPOINT
+GSTREAMER1_POST_INSTALL_TARGET_HOOKS += GSTREAMER1_REMOVE_LA_FILES
 
 # Checking if unaligned memory access works correctly cannot be done when cross
 # compiling. For the following architectures there is no information available
@@ -36,6 +40,7 @@ GSTREAMER1_CONF_OPT = \
 	--disable-benchmarks \
 	--disable-check \
 	$(if $(BR2_PACKAGE_GSTREAMER1_TRACE),,--disable-trace) \
+	$(if $(BR2_PACKAGE_GSTREAMER1_ALLOC_TRACE),,--disable-alloc-trace) \
 	$(if $(BR2_PACKAGE_GSTREAMER1_PARSE),,--disable-parse) \
 	$(if $(BR2_PACKAGE_GSTREAMER1_GST_DEBUG),,--disable-gst-debug) \
 	$(if $(BR2_PACKAGE_GSTREAMER1_PLUGIN_REGISTRY),,--disable-registry) \

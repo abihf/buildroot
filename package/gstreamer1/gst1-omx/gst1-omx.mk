@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_OMX_VERSION = ed7a301a42dd57d2865109913fdbc5e19d9ab5ed
+GST1_OMX_VERSION = 703bab688566c6fe4de934dbb2b93300bc2aa4ff
 GST1_OMX_SOURCE = gst-omx-$(GST1_OMX_VERSION).tar.gz
 GST1_OMX_SITE = http://cgit.freedesktop.org/gstreamer/gst-omx/snapshot/
 
@@ -17,22 +17,23 @@ GST1_OMX_AUTORECONF = YES
 
 GST1_OMX_POST_DOWNLOAD_HOOKS += GSTREAMER1_COMMON_DOWNLOAD
 GST1_OMX_POST_EXTRACT_HOOKS += GSTREAMER1_COMMON_EXTRACT
+GST1_OMX_POST_INSTALL_TARGET_HOOKS += GSTREAMER1_REMOVE_LA_FILES
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_GL),y)
 GST1_OMX_DEPENDENCIES += gst1-plugins-bad
 endif
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 GST1_OMX_CONF_OPT = \
+	--disable-examples
+
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+GST1_OMX_CONF_OPT += \
 	--with-omx-target=rpi
 GST1_OMX_CONF_ENV = \
 	CFLAGS="$(TARGET_CFLAGS) \
 		-I$(STAGING_DIR)/usr/include/IL \
 		-I$(STAGING_DIR)/usr/include/interface/vcos/pthreads \
 		-I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux"
-else
-GST1_OMX_CONF_OPT = \
-	--disable-examples
 endif
 
 ifeq ($(BR2_PACKAGE_BELLAGIO),y)

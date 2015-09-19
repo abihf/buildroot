@@ -5,7 +5,9 @@
 ################################################################################
 
 GST1_PLUGINS_BASE_VERSION = $(GSTREAMER1_VERSION)
-
+ifeq ($(BR2_PACKAGE_GSTREAMER1_GIT),y)
+GST1_PLUGINS_BASE_VERSION = a7bcdc3608b7e21ff4c2a18eb211238cdabfa355
+endif
 GST1_PLUGINS_BASE_SOURCE = gst-plugins-base-$(GST1_PLUGINS_BASE_VERSION).tar.gz
 GST1_PLUGINS_BASE_SITE = http://cgit.freedesktop.org/gstreamer/gst-plugins-base/snapshot/
 GST1_PLUGINS_BASE_INSTALL_STAGING = YES
@@ -18,6 +20,7 @@ GST1_PLUGINS_BASE_AUTORECONF_OPT = -I $(@D)/m4 -I $(@D)/common/m4
 GST1_PLUGINS_BASE_POST_DOWNLOAD_HOOKS += GSTREAMER1_COMMON_DOWNLOAD
 GST1_PLUGINS_BASE_POST_EXTRACT_HOOKS += GSTREAMER1_COMMON_EXTRACT
 GST1_PLUGINS_BASE_PRE_CONFIGURE_HOOKS += GSTREAMER1_FIX_AUTOPOINT
+GST1_PLUGINS_BASE_POST_INSTALL_TARGET_HOOKS += GSTREAMER1_REMOVE_LA_FILES
 
 # freetype is only used by examples, but if it is not found
 # and the host has a freetype-config script, then the host
@@ -210,5 +213,11 @@ GST1_PLUGINS_BASE_DEPENDENCIES += libvorbis
 else
 GST1_PLUGINS_BASE_CONF_OPT += --disable-vorbis
 endif
+
+define GST1_PLUGINS_BASE_REMOVE_TOOLS
+	rm -f $(TARGET_DIR)/usr/bin/gst-{device-monitor,play,discoverer}-1.0
+endef
+
+GST1_PLUGINS_BASE_POST_INSTALL_TARGET_HOOKS += GST1_PLUGINS_BASE_REMOVE_TOOLS
 
 $(eval $(autotools-package))

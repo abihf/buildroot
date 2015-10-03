@@ -1,0 +1,18 @@
+config BR2_PACKAGE_LIBFPRINT
+	bool "libfprint"
+	select BR2_PACKAGE_LIBUSB
+	select BR2_PACKAGE_LIBNSS
+	select BR2_PACKAGE_GDK_PIXBUF
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on BR2_USE_MMU # fork()
+	help
+	  Open source software library designed to make it easy for 
+	  application developers to add support for consumer fingerprint 
+	  readers to their software.
+
+	  http://www.freedesktop.org/wiki/Software/fprint/libfprint/
+
+
+comment "pcsc-lite needs a toolchain w/ threads"
+	depends on BR2_USE_MMU
+	depends on !BR2_TOOLCHAIN_HAS_THREADS

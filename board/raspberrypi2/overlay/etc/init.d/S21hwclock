@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+
+
+case "$1" in
+    start|"")
+	echo ds3231 0x68 >> /sys/class/i2c-adapter/i2c-1/new_device
+	hwclock -su
+	;;
+    stop)
+	;;
+    *)
+	echo "Usage: $0 {start|stop}" >&2
+	exit 1
+	;;
+esac

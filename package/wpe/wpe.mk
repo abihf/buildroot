@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WPE_VERSION = 21f93760ad68c568d9b4cc2d9562fff35d713105
+WPE_VERSION = afd955bf45e123dd459d0889f10712fd1fcc15a7
 WPE_SITE = $(call github,Metrological,WebKitForWayland,$(WPE_VERSION))
 
 WPE_INSTALL_STAGING = YES
@@ -69,7 +69,6 @@ WPE_FLAGS = \
 	-DENABLE_NOTIFICATIONS=OFF \
 	-DENABLE_ORIENTATION_EVENTS=OFF \
 	-DENABLE_PERFORMANCE_TIMELINE=ON \
-	-DENABLE_PROMISES=ON \
 	-DENABLE_PROXIMITY_EVENTS=OFF \
 	-DENABLE_QUOTA=OFF \
 	-DENABLE_REQUEST_ANIMATION_FRAME=ON \
@@ -90,7 +89,6 @@ WPE_FLAGS = \
 	-DENABLE_WEB_REPLAY=OFF \
 	-DENABLE_WEB_SOCKETS=ON \
 	-DENABLE_WEB_TIMING=ON \
-	-DENABLE_XHR_TIMEOUT=ON \
 	-DENABLE_XSLT=ON \
 	-DUSE_SYSTEM_MALLOC=OFF \
 	-DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON
@@ -110,9 +108,6 @@ WPE_FLAGS += \
 	-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF -DENABLE_WEB_AUDIO=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_ATHOL),y)
-WPE_DEPENDENCIES += athol
-WPE_SHELL = Athol
 define WPE_INSTALL_AUTOSTART
 	$(INSTALL) -D -m 0755 package/wpe/wpe $(TARGET_DIR)/usr/bin
 	$(INSTALL) -D -m 0755 package/wpe/S90wpe $(TARGET_DIR)/etc/init.d
@@ -120,10 +115,6 @@ define WPE_INSTALL_AUTOSTART
 		$(INSTALL) -D -m 0755 package/wpe/wpe-update $(TARGET_DIR)/usr/bin; \
 	fi
 endef
-else
-WPE_DEPENDENCIES += weston
-WPE_SHELL = Weston
-endif
  
 ifeq ($(BR2_ENABLE_DEBUG),y)
 BUILDTYPE = Debug
@@ -196,12 +187,12 @@ ifeq ($(VERBOSE),1)
 endif
 
 define WPE_BUILD_CMDS
-	$(WPE_MAKE_ENV) $(HOST_DIR)/usr/bin/ninja -C $(WPE_BUILDDIR) $(WPE_NINJA_EXTRA_OPTIONS) libWPEWebKit.so libWPEWebInspectorResources.so WPE{Web,Network}Process WPE$(WPE_SHELL)Shell
+	$(WPE_MAKE_ENV) $(HOST_DIR)/usr/bin/ninja -C $(WPE_BUILDDIR) $(WPE_NINJA_EXTRA_OPTIONS) libWPEWebKit.so libWPEWebInspectorResources.so WPE{Web,Network}Process WPELauncher
 endef
 
 define WPE_INSTALL_STAGING_CMDS
 	(cd $(WPE_BUILDDIR) && \
-	cp bin/WPE{Network,Web}Process $(STAGING_DIR)/usr/bin/ && \
+	cp bin/WPE{Network,Web}Process bin/WPELauncher $(STAGING_DIR)/usr/bin/ && \
 	cp -d lib/libWPE* $(STAGING_DIR)/usr/lib/ )
 endef
 

@@ -4,13 +4,14 @@
 #
 ################################################################################
 
-VALA_VERSION_MAJOR = 0.18
-VALA_VERSION_MINOR = 1
+VALA_VERSION_MAJOR = 0.28
+VALA_VERSION_MINOR = 0
 VALA_VERSION = $(VALA_VERSION_MAJOR).$(VALA_VERSION_MINOR)
 VALA_SITE = http://download.gnome.org/sources/vala/$(VALA_VERSION_MAJOR)
 VALA_SOURCE = vala-$(VALA_VERSION).tar.xz
 VALA_LICENSE = LGPLv2.1+
 VALA_LICENSE_FILES = COPYING
+HOST_VALA_AUTORECONF = YES
 
 VALA_DEPENDENCIES = host-flex host-bison libglib2 \
 		$(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext)

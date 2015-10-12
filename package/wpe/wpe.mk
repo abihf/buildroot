@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-WPE_VERSION = afd955bf45e123dd459d0889f10712fd1fcc15a7
+WPE_VERSION = 32a42dc321b0efaab82975cf0ed3ecc662fdd858
 WPE_SITE = $(call github,Metrological,WebKitForWayland,$(WPE_VERSION))
 
 WPE_INSTALL_STAGING = YES
 WPE_DEPENDENCIES = host-flex host-bison host-gperf host-ruby host-ninja \
 	host-pkgconf zlib pcre libgles libegl cairo freetype fontconfig \
-	harfbuzz icu libxml2 libxslt sqlite libsoup jpeg webp wayland
+	harfbuzz icu libxml2 libxslt sqlite libinput libsoup jpeg webp
 
 WPE_FLAGS = \
 	-DENABLE_ACCELERATED_2D_CANVAS=ON \
@@ -96,6 +96,14 @@ WPE_FLAGS = \
 ifeq ($(BR2_mipsel),y)
 WPE_FLAGS += \
 	-DENABLE_JIT=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+WPE_DEPENDENCIES += wayland
+endif
+
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+WPE_DEPENDENCIES += rpi-userland
 endif
 
 ifeq ($(BR2_PACKAGE_WPE_USE_GSTREAMER),y)
@@ -198,7 +206,7 @@ endef
 
 define WPE_INSTALL_TARGET_CMDS
 	(pushd $(WPE_BUILDDIR) > /dev/null && \
-	cp bin/WPE{Network,Web}Process $(TARGET_DIR)/usr/bin/ && \
+	cp bin/WPE{Network,Web}Process bin/WPELauncher $(TARGET_DIR)/usr/bin/ && \
 	cp -d lib/libWPE* $(TARGET_DIR)/usr/lib/ && \
 	$(STRIPCMD) $(TARGET_DIR)/usr/lib/libWPEWebKit.so.0.0.1 && \
 	popd > /dev/null)

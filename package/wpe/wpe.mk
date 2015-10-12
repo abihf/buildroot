@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WPE_VERSION = 32a42dc321b0efaab82975cf0ed3ecc662fdd858
+WPE_VERSION = de84f35b028cf96e0b35e4d893867de650e5f007
 WPE_SITE = $(call github,Metrological,WebKitForWayland,$(WPE_VERSION))
 
 WPE_INSTALL_STAGING = YES
@@ -116,14 +116,6 @@ WPE_FLAGS += \
 	-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF -DENABLE_WEB_AUDIO=OFF
 endif
 
-define WPE_INSTALL_AUTOSTART
-	$(INSTALL) -D -m 0755 package/wpe/wpe $(TARGET_DIR)/usr/bin
-	$(INSTALL) -D -m 0755 package/wpe/S90wpe $(TARGET_DIR)/etc/init.d
-	if [ -f package/wpe/wpe-update ]; then \
-		$(INSTALL) -D -m 0755 package/wpe/wpe-update $(TARGET_DIR)/usr/bin; \
-	fi
-endef
- 
 ifeq ($(BR2_ENABLE_DEBUG),y)
 BUILDTYPE = Debug
 WPE_FLAGS += \
@@ -195,22 +187,22 @@ ifeq ($(VERBOSE),1)
 endif
 
 define WPE_BUILD_CMDS
-	$(WPE_MAKE_ENV) $(HOST_DIR)/usr/bin/ninja -C $(WPE_BUILDDIR) $(WPE_NINJA_EXTRA_OPTIONS) libWPEWebKit.so libWPEWebInspectorResources.so WPE{Web,Network}Process WPELauncher
+	$(WPE_MAKE_ENV) $(HOST_DIR)/usr/bin/ninja -C $(WPE_BUILDDIR) $(WPE_NINJA_EXTRA_OPTIONS) libWPEWebKit.so libWPEWebInspectorResources.so WPE{Web,Network}Process
 endef
 
 define WPE_INSTALL_STAGING_CMDS
 	(cd $(WPE_BUILDDIR) && \
-	cp bin/WPE{Network,Web}Process bin/WPELauncher $(STAGING_DIR)/usr/bin/ && \
+	cp bin/WPE{Network,Web}Process $(STAGING_DIR)/usr/bin/ && \
 	cp -d lib/libWPE* $(STAGING_DIR)/usr/lib/ )
+	DESTDIR=$(STAGING_DIR) $(HOST_DIR)/usr/bin/cmake -DCOMPONENT=Development -P $(WPE_BUILDDIR)/Source/WebKit2/cmake_install.cmake
 endef
 
 define WPE_INSTALL_TARGET_CMDS
 	(pushd $(WPE_BUILDDIR) > /dev/null && \
-	cp bin/WPE{Network,Web}Process bin/WPELauncher $(TARGET_DIR)/usr/bin/ && \
+	cp bin/WPE{Network,Web}Process $(TARGET_DIR)/usr/bin/ && \
 	cp -d lib/libWPE* $(TARGET_DIR)/usr/lib/ && \
 	$(STRIPCMD) $(TARGET_DIR)/usr/lib/libWPEWebKit.so.0.0.1 && \
 	popd > /dev/null)
-	$(WPE_INSTALL_AUTOSTART)
 endef
 
 RSYNC_VCS_EXCLUSIONS += --exclude LayoutTests --exclude WebKitBuild
